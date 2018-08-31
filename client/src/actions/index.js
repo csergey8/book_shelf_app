@@ -16,3 +16,37 @@ export function getBooks(limit = 10, start = 0, order = 'asc', list = '') {
     payload: request
   }
 }
+//ACTION FOR TWO RESPONSE
+export function getBookWithReviewer(id) {
+  const request = axios.get(`/api/getBook?id=${id}`)
+
+
+  return (dispatch) => {
+    request.then(({ data }) => {
+      let book = data;
+
+      axios.get(`/api/getReviewer?id=${book.ownerId}`)
+        .then( ({data}) => {
+          let response = {
+            book,
+            reviewer: data
+          }
+          dispatch({
+            type: 'GET_BOOK_W_REVIEWER',
+            payload: response
+          })
+        })
+    });
+  }
+}
+
+//CLEAR STORE FUNCTION
+export function clearBookWithReviewer() {
+  return {
+    type: 'CLEAR_BOOK_W_REVIEWER',
+    payload: {
+      book: {},
+      reviewer: {}
+    }
+  }
+}
