@@ -29,7 +29,7 @@ class Login extends Component {
 
   handleInputPassword = (e) => {
     this.setState({
-      password: e.target.password
+      password: e.target.value
     });
   }
   render() {

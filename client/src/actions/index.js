@@ -53,6 +53,7 @@ export function clearBookWithReviewer() {
 
 ///////USER REQUESTS/////////////
 export function loginUser({ email, password}) {
+  console.log(password)
   const request = axios.post(`/api/login`, {email, password})
                         .then(response => response.data)
 
@@ -62,3 +63,13 @@ export function loginUser({ email, password}) {
     payload: request
   }
 } 
+
+export function auth() {
+  const request = axios.get('/api/auth')
+                        .then(response => response.data)
+
+  return {
+    type: 'USER_AUTH',
+    payload: request
+  }
+}
