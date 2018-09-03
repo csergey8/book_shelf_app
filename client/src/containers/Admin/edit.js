@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { addBook, clearNewBook } from '../../actions';
+import { getBook, updateBook, clearBook, deleteBook } from '../../actions';
 
-class AddBook extends Component {
+class EditBook extends PureComponent {
+
   state = {
     formdata: {
+      _id: this.props.match.params.id,
       name: '',
       author: '',
       review: '',
@@ -16,11 +18,7 @@ class AddBook extends Component {
   }
   submitForm = (e) => {
     e.preventDefault();
-
-    this.props.dispatch(addBook({
-      ...this.state.formdata,
-      ownerId: this.props.user.login.id
-    }))
+    this.props.dispatch(updateBook(this.state.formdata));
   }
   handleInput = (event, name) => {
     const newFormData = {...this.state.formdata};
@@ -29,25 +27,53 @@ class AddBook extends Component {
       formdata: newFormData
     })
   }
-  showNewBook = (book) => (
-    book.post ?
-    <div className="conf_link">
-      <Link to={`/books/${book.bookId}`}>
-        Click a link to see a post
-      </Link>
-    </div>
-    : null
-  )
 
-  componentWillUnmount() {
-    this.props.dispatch(clearNewBook());
+  redirectUser = () => {
+    setTimeout(()=> {
+      this.props.history.push('/user/user-reviews');
+    }, 2000)
   }
 
+  deletePost = () => {
+    this.props.dispatch(deleteBook(this.props.match.params.id));
+  }
+  
+  componentWillMount() {
+    this.props.dispatch(getBook(this.props.match.params.id));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    let book = nextProps.books.book;
+    this.setState({
+      formdata: {
+        _id: book._id,
+        name: book.name,
+        author: book.author,
+        review: book.review,
+        pages: book.pages,
+        rating: book.rating,
+        price: book.price
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch(clearBook());
+  }
+  
+
   render() {
+    console.log(this.props)
     return (
       <div className="rl_container article">
+      {
+        this.props.books.updateBook ? <div className="edit_confirm">Review Successfull Updated <Link to={`/books/${this.props.books.book._id}`}>link</Link></div>  : null
+      }
+      {
+        this.props.books.postDeleted ? <div className="red_tag">Post Deleted {this.redirectUser()}</div> : null  
+      }
           <form onSubmit={this.submitForm}>
-            <h2>Add a review</h2>
+            <h2>Edit a Review</h2>
             <div className="form_element">
               <input 
               type="text" 
@@ -97,10 +123,16 @@ class AddBook extends Component {
               onChange={(event) => this.handleInput(event, 'price')}
               />
             </div>
-            <button type="submit">Add Review</button>
-            {
-              this.props.books.newbook ? this.showNewBook(this.props.books.newbook) : null
-            }
+            <button type="submit">Update Review</button>
+            <div className="delete_post">
+              <div
+                className="button"
+                onClick={this.deletePost}
+                >
+                Delete review
+              </div>
+            
+            </div>
           </form>
       </div>
     )
@@ -113,4 +145,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(AddBook);
+export default connect(mapStateToProps)(EditBook);
