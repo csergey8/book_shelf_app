@@ -63,7 +63,6 @@ class EditBook extends PureComponent {
   
 
   render() {
-    console.log(this.props)
     return (
       <div className="rl_container article">
       {

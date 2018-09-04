@@ -103,7 +103,7 @@ export function clearBook() {
   return {
     type: 'CLEAR_BOOK',
     payload: {
-      book: {},
+      book: null,
       updateBook: false,
       postDeleted: false
     }
