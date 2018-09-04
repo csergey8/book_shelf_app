@@ -22,7 +22,6 @@ class UserPosts extends Component {
   )
 
   render() {
-    console.log(this.props)
     let user = this.props.books;
     return (
       <div className="user_posts">
