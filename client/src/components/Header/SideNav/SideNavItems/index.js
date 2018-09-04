@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
+import { connect } from 'react-redux';
 
-export default () => {
+const SideNavItems = ({user}) => {
   const items = [
     {
       type: 'navItem',
@@ -16,42 +17,43 @@ export default () => {
       icon: 'file-text-o',
       text: 'My Profile',
       link: '/user',
-      restricted: false
+      restricted: true
     },
     {
       type: 'navItem',
       icon: 'file-text-o',
       text: 'Add Admins',
       link: '/user/register',
-      restricted: false
+      restricted: true
     },
     {
       type: 'navItem',
       icon: 'file-text-o',
       text: 'Login',
       link: '/login',
-      restricted: false
+      restricted: false,
+      exclude: true
     },
     {
       type: 'navItem',
       icon: 'file-text-o',
       text: 'My Reviews',
       link: '/user/user-reviews',
-      restricted: false
+      restricted: true
     },
     {
       type: 'navItem',
       icon: 'file-text-o',
       text: 'Add Review',
       link: '/user/add',
-      restricted: false
+      restricted: true
     },
     {
       type: 'navItem',
       icon: 'file-text-o',
       text: 'Logout',
       link: '/user/logout',
-      restricted: false
+      restricted: true
     },
   ];
 
@@ -64,12 +66,21 @@ export default () => {
     </div>
   );
 
-  const showItems = () => items.map((item, i) => {
-    return (
-      element(item, i)
-    );
-  })
-
+  const showItems = () => (
+    user.login ?
+    items.map((item, i) => {
+      if(user.login.isAuth) {
+        return !item.exclude ? 
+        element(item, i)
+        : null
+      } else {
+        return !item.restricted ? 
+          element(item, i)
+        : null
+      }
+    })
+    : null
+  )
 
 
   return (
@@ -78,3 +89,11 @@ export default () => {
     </div>
   )
 }
+
+function mapStateToProps(state) {
+  return {
+    user: state.user
+  }
+}
+
+export default connect(mapStateToProps)(SideNavItems);
