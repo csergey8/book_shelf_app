@@ -13,6 +13,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// Settings for deploy
+app.use(express.static('client/build'));
+
 mongoose.Promise = global.Promise;
 mongoose.connect(config.DATABASE);
 
@@ -162,6 +165,14 @@ app.delete('/api/delete_book', (req, res) => {
     res.json(true);
   })
 })
+
+if(process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  app.get('/*', (req, res) => {
+    res.sendfile(path.resolve(__dirname, '../client', 'build', 'index.html'));
+  })
+}
+
 
 app.listen(port, () => {
   console.log(`server started on ${port} port`);
